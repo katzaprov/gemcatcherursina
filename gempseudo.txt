@@ -1,0 +1,27 @@
+colref = {
+    1:'janidite'
+    2:'hoplitite'
+    3:'dynomite'
+    4:'aurelite'
+}
+
+
+box update
+    if collides with player:
+        if self.col = 1:
+            add 10 to score
+        if self.col = 2:
+            add 10 to health
+        if self.col = 3:
+            add -10 to health
+        if self.col = 4:
+            add 30 to score
+            add -10 to health
+        set y to 30
+        set x to random(-5,5)
+        set col to random(1,4)
+        set texture to match col
+
+
+
+        
