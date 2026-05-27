@@ -16,7 +16,7 @@ box update
             add -10 to health
         if self.col = 4:
             add 30 to score
-            add -10 to health
+            add -20 to health
         set y to 30
         set x to random(-5,5)
         set col to random(1,4)
