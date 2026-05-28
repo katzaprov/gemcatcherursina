@@ -10,7 +10,7 @@ health = 40
 
 def colour(prior):
     gemtype = randint(1,4)
-    while prior == gemtype:
+    if prior == gemtype:
         gemtype = randint(1,4)
     if gemtype == 1:
         gcolor = color.green
@@ -73,7 +73,7 @@ class Obj(Entity):
                 score += 30
 
             gem = randint(1,4)
-            while self.gemtype == gem:
+            if self.gemtype == gem:
                 self.gem = randint(1,4)
             if gem == 1:
                 self.color = color.green
@@ -93,7 +93,7 @@ class Obj(Entity):
             print('down')
 
             gem = randint(1,4)
-            while self.gemtype == gem:
+            if self.gemtype == gem:
                 self.gem = randint(1,4)
             if gem == 1:
                 self.color = color.green
@@ -113,7 +113,7 @@ class Obj(Entity):
             print('up')        
 
             gem = randint(1,4)
-            while self.gemtype == gem:
+            if self.gemtype == gem:
                 self.gem = randint(1,4)
             if gem == 1:
                 self.color = color.green
@@ -136,14 +136,10 @@ class Obj(Entity):
 class MC(Entity):
     def __init__(self, **kwargs):
         super().__init__()
-        if self.model not in self.attributes:
-            self.model='cube'
-        if self.texture not in self.attributes:
-            self.texture='white_cube'
-        if self.position not in self.attributes:
-            self.position = Vec3(0,0,0)
-        if self.scale not in self.attributes:
-            self.scale = Vec3(4,1,1)
+        self.model='cube'
+        self.texture='white_cube'
+        self.position = Vec3(0,0,0)
+        self.scale = Vec3(4,1,1)
         self.collider = 'box'
         try:
             self.mome
@@ -167,7 +163,7 @@ class MC(Entity):
         self.position += self.mome * time.dt
 
 
-cam = EditorCamera()
+EditorCamera()
 
 block1 = Obj()
 block2 = Obj()
