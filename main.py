@@ -49,6 +49,40 @@ class Obj(Entity):
         self.mome = Vec3(0,0,0)
         self.Drag = 0
         boxes.append(self.name)
+=======
+        self.grav = True
+    def update(self,):
+        try:
+            if self.intersects(char) or self.intersects():
+                
+                if 'w' in held_keys or 'a' in held_keys:
+                    self.position[1] += 2
+                    self.mome += Vec3(0,20,0)
+                else:   
+                    self.position[1] = 2
+                    self.mome[1] = 0 - (self.mome[1])
+            else:
+                if self.grav == True:
+                    self.mome -= Vec3(0,littleg,0) * time.dt
+                    Drag = .5*1.225*(self.mome[1]*self.mome[1])*1.05*(self.scale[1]*self.scale[2])*time.dt
+                    self.mome += Vec3(0,Drag,0) *time.dt
+                if self.position[1] <= -2:
+                    self.position = Vec3(randrange(-10,10)+0.05,randrange(25,30),0)
+                    self.mome = Vec3(0,0,0)
+                    Drag = 0
+                    
+                    print('down')
+                elif self.position[1] >= 30:
+                    self.position = Vec3(randrange(-10,10)+0.05,0,0)
+                    self.mome = Vec3(0,0,0)
+                    Drag = 0
+                    print('up')
+                self.position += self.mome * time.dt
+        finally:
+            pass
+        print(f'y is {self.position[1]}')
+
+>>>>>>> Stashed changes
 
 
     def update(self):
