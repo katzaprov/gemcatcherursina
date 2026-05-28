@@ -3,7 +3,7 @@ from random import *
 app = Ursina()
 
 #initialise vars
-littleg = 12
+littleg = 9.8
 boxes = []
 score = 0
 health = 40
@@ -47,6 +47,7 @@ class Obj(Entity):
         self.gemtype = 1
         self.color = color.yellow
         self.mome = Vec3(0,0,0)
+<<<<<<< Updated upstream
         self.Drag = 0
         boxes.append(self.name)
 =======
@@ -168,11 +169,12 @@ class Obj(Entity):
 
 
 class MC(Entity):
-    def __init__(self, **kwargs):
+    def __init__(self, ):
         super().__init__()
         self.model='cube'
         self.texture='white_cube'
         self.position = Vec3(0,0,0)
+<<<<<<< Updated upstream
         self.scale = Vec3(4,1,1)
         self.collider = 'box'
         try:
@@ -182,15 +184,15 @@ class MC(Entity):
     
     def input(self, key):
         if held_keys['shift']:
-            if key == 'a' or key == 'q':
-                self.position += Vec3(-2,0,0)
-            if key == 'd' or key == 'r':
-                self.position += Vec3(2,0,0)
+            if held_keys['a'] or held_keys['q']:
+                self.position += Vec3(-25*time.dt,0,0)
+            if held_keys['d'] or held_keys['e']:
+                self.position += Vec3(25*time.dt,0,0)
         else:
-            if key == 'a' or key == 'q':
-                self.position += Vec3(-.5,0,0)
-            if key == 'd' or key == 'r':
-                self.position += Vec3(.5,0,0)
+            if held_keys['a'] or held_keys['q']:
+                self.position += Vec3(-8*time.dt,0,0)
+            if held_keys['d'] or held_keys['e']:
+                self.position += Vec3(8*time.dt,0,0)
 
 
     def update(self):
