@@ -3,65 +3,78 @@ from random import *
 app = Ursina()
 
 #initialise vars
-littleg = 12
-boxes = []
+littleg = 0.05 # needs tweaking
 score = 0
 health = 40
+gem_parent = Entity()
+gem_parent.visible_self = False
+PLAYERSPEED = 0.1 # player acceleration
+PLAYER_DRAG = 0.03
+PLAYER_MAX_SPEED = 0.2
+GEM_MAX_SPEED = 0.4 # needs tweaking
 
-def colour(prior):
+def act_drag(input:Vec3):
+    output = Vec3()
+    tput = tuple(input)
+    for i in tput:
+        if i > 0:
+            output[tput.index(i)] = max(0, i - PLAYER_DRAG)
+        elif i < 0:
+            output[tput.index(i)] = min(0, i + PLAYER_DRAG)
+    return output
+
+def sign(x):
+    return (x > 0) - (x < 0)
+
+def cap(x,cap):
+    return sign(x)*min(cap,abs(x))
+
+def colour():
     gemtype = randint(1,4)
-    if prior == gemtype:
-        gemtype = randint(1,4)
     if gemtype == 1:
         gcolor = color.green
-    if gemtype == 2:
+    elif gemtype == 2:
         gcolor = color.blue
-    if gemtype == 3:
+    elif gemtype == 3:
         gcolor = color.orange
-    if gemtype == 4:
+    elif gemtype == 4:
         gcolor = color.yellow
     print(gemtype)
     return gemtype,gcolor
 
-class ui():
+class Ui(Entity):
     def __init__(self,**kwargs):
         super().__init__()
-        if self.model not in kwargs:
-            self.model='quad'
-        if self.texture not in kwargs:
-            self.texture='whitepixel.bmp'
-        if self.position not in kwargs:
-            self.position = Vec2(8,8)
-        if self.scale not in kwargs:
-            self.scale = Vec2(1,1)
+        self.parent = camera
+        self.model='quad'
+        self.texture='whitepixel.bmp'
+        self.position = Vec2(8,8)
+        self.scale = Vec2(1,1)
 
 
-class Obj(Entity):
+class Gem(Entity):
     def __init__(self,**kwargs):
         super().__init__()
         self.model='cube'
         self.texture='white_cube'
         self.position = Vec3(0.05,25,0)
-        self.scale = Vec3(1,1,1)
         self.collider = 'box'
         self.gemtype = 1
         self.color = color.yellow
-        self.mome = Vec3(0,0,0)
+        self.v = Vec3(0,0,0)
         self.Drag = 0
-        boxes.append(self.name)
-
-
+        self.world_parent = gem_parent
     def update(self):
         global score
         global health
-        self.mome -= Vec3(0,littleg,0) * time.dt
-        self.Drag = .5*1.225*(self.mome[1]*self.mome[1])*1.05*(self.scale[1]*self.scale[2])*time.dt
-        self.mome += Vec3(0,self.Drag,0) *time.dt
+        self.v -= Vec3(0,littleg,0)
+        self.Drag = .5*1.225*(self.v[1]*self.v[1])*1.05*(self.scale[1]*self.scale[2])
+        self.v += Vec3(0,self.Drag,0)
         
-        if self.intersects(char).hit:
+        if self.intersects(player).hit:
             self.position = Vec3(randrange(-10,10)+0.05,randrange(25,30),0)
             self.Drag = 0
-            self.mome = Vec3(0,0,0)
+            self.v = Vec3(0,0,0)
             print('catch')
             if self.gemtype == 1:
                 score += 10
@@ -72,101 +85,87 @@ class Obj(Entity):
             if self.gemtype == 4:
                 score += 30
 
-            gem = randint(1,4)
-            if self.gemtype == gem:
-                self.gem = randint(1,4)
-            if gem == 1:
+            self.gemtype = randint(1,4)
+            if self.gemtype == 1:
                 self.color = color.green
-            if gem == 2:
+            if self.gemtype == 2:
                 self.color = color.blue
-            if gem == 3:
+            if self.gemtype == 3:
                 self.color = color.orange
-            if gem == 4:
+            if self.gemtype == 4:
                 self.color = color.yellow
-            print(gem)
-            self.gemtype = gem
+            print(self.gemtype)
 
         if self.position[1] <= -2:
             self.position = Vec3(randrange(-10,10)+0.05,randrange(25,30),0)
-            self.mome = Vec3(0,0,0)
+            self.v = Vec3(0,0,0)
             self.Drag = 0
             print('down')
 
-            gem = randint(1,4)
-            if self.gemtype == gem:
-                self.gem = randint(1,4)
-            if gem == 1:
+            self.gemtype = randint(1,4)
+            if self.gemtype == 1:
                 self.color = color.green
-            if gem == 2:
+            if self.gemtype == 2:
                 self.color = color.blue
-            if gem == 3:
+            if self.gemtype == 3:
                 self.color = color.orange
-            if gem == 4:
+            if self.gemtype == 4:
                 self.color = color.yellow
-            print(gem)
-            self.gemtype = gem
+            print(self.gemtype)
 
         if self.position[1] >= 30:
             self.position = Vec3(randrange(-10,10)+0.05,randrange(25,30),0)
-            self.mome = Vec3(0,0,0)
+            self.v = Vec3(0,0,0)
             self.Drag = 0
             print('up')        
 
-            gem = randint(1,4)
-            if self.gemtype == gem:
-                self.gem = randint(1,4)
-            if gem == 1:
+            self.gemtype = randint(1,4)
+            if self.gemtype == 1:
                 self.color = color.green
-            if gem == 2:
+            if self.gemtype == 2:
                 self.color = color.blue
-            if gem == 3:
+            if self.gemtype == 3:
                 self.color = color.orange
-            if gem == 4:
+            if self.gemtype == 4:
                 self.color = color.yellow
-            print(gem)
-            self.gemtype = gem
+            print(self.gemtype)
+        for i in self.v:
+            self.v[tuple(self.v).index(i)] = cap(i,GEM_MAX_SPEED)
+        self.position += self.v
+ #       print(f'pos {self.position}')
+#        print(f'velocity {self.v}')
 
-        self.position += self.mome * time.dt
-        print(f'pos {self.position}')
-        print(f'momentum {self.mome}')
-
-
-
-
-class MC(Entity):
+class Player(Entity):
     def __init__(self, **kwargs):
         super().__init__()
         self.model='cube'
         self.texture='white_cube'
         self.position = Vec3(0,0,0)
-        self.scale = Vec3(4,1,1)
         self.collider = 'box'
-        try:
-            self.mome
-        except:
-            self.mome = Vec3(0,0,0)
-    
-    def input(self, key):
-        if held_keys['shift']:
-            if key == 'a' or key == 'q':
-                self.position += Vec3(-2,0,0)
-            if key == 'd' or key == 'r':
-                self.position += Vec3(2,0,0)
-        else:
-            if key == 'a' or key == 'q':
-                self.position += Vec3(-.5,0,0)
-            if key == 'd' or key == 'r':
-                self.position += Vec3(.5,0,0)
-
-
+        self.v = Vec3(0,0,0)
+        self.scale = Vec3(3,1,1)
     def update(self):
-        self.position += self.mome * time.dt
-
+        if health <= 0:
+            raise SystemExit() # death, "raise SystemExit()" exits the program
+        '''
+        if held_keys['shift']:
+            if held_keys['a'] or held_keys['q']:
+                self.v += Vec3(0-PLAYERSPEED*5,0,0)
+            if held_keys['d'] or held_keys['r']:
+                self.v += Vec3(PLAYERSPEED*5,0,0)
+        else:   '''
+        if held_keys['a'] or held_keys['q']:
+            self.v += Vec3(0-PLAYERSPEED,0,0)
+        if held_keys['d'] or held_keys['r']:
+            self.v += Vec3(PLAYERSPEED,0,0)
+        for i in self.v:
+            self.v[tuple(self.v).index(i)] = cap(i,PLAYER_MAX_SPEED)
+        self.position += self.v
+        self.v = act_drag(self.v)
 
 EditorCamera()
 
-block1 = Obj()
-block2 = Obj()
-block3 = Obj()
-char = MC()
+for i in range(3):
+    Gem()
+player = Player()
 app.run()
