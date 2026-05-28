@@ -29,7 +29,7 @@ def sign(x):
 def cap(x,cap):
     return sign(x)*min(cap,abs(x))
 
-def colour():
+def colour(): # UNUSED!!!
     gemtype = randint(1,4)
     if gemtype == 1:
         gcolor = color.green
@@ -165,7 +165,7 @@ class Player(Entity):
 
 EditorCamera()
 
-for i in range(3):
+for i in range(10): # gem num
     Gem()
 player = Player()
 app.run()
