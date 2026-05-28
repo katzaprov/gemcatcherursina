@@ -1,43 +1,34 @@
 from ursina import *
 from random import *
 app = Ursina()
+from winsound import PlaySound,SND_FILENAME
 
 #initialise vars
 littleg = 9.8
 boxes = []
 score = 0
 health = 40
+Text.default_font = '8514oem.ttf'
 
-def colour(prior):
-    gemtype = randint(1,4)
-    if prior == gemtype:
-        gemtype = randint(1,4)
-    if gemtype == 1:
-        gcolor = color.green
-    if gemtype == 2:
-        gcolor = color.blue
-    if gemtype == 3:
-        gcolor = color.orange
-    if gemtype == 4:
-        gcolor = color.yellow
-    print(gemtype)
-    return gemtype,gcolor
+class startup():
+    script_dir = os.path.dirname(__file__) 
+    sound_path = '\\'.join([script_dir, 'sounds', 'alterraboot.wav'])
+    print(sound_path)
+    print('hello world')
+    PlaySound(sound_path,SND_FILENAME)
+
 
 class ui():
-    def __init__(self,**kwargs):
+    global health
+    global score
+    def __init__(self,):
         super().__init__()
-        if self.model not in kwargs:
-            self.model='quad'
-        if self.texture not in kwargs:
-            self.texture='whitepixel.bmp'
-        if self.position not in kwargs:
-            self.position = Vec2(8,8)
-        if self.scale not in kwargs:
-            self.scale = Vec2(1,1)
+        scoreboard = Text('Loading',world_scale=2,origin=Vec2(-.5,.5),position=window.top_left)
+        healthboard = Text('Loading',world_scale=2,origin=Vec2(-.5,.5),position=scoreboard.bottom_left)
 
 
 class Obj(Entity):
-    def __init__(self,**kwargs):
+    def __init__(self,):
         super().__init__()
         self.model='cube'
         self.texture='white_cube'
@@ -47,11 +38,10 @@ class Obj(Entity):
         self.gemtype = 1
         self.color = color.yellow
         self.mome = Vec3(0,0,0)
-<<<<<<< Updated upstream
         self.Drag = 0
         boxes.append(self.name)
-=======
         self.grav = True
+
     def update(self,):
         try:
             if self.intersects(char) or self.intersects():
@@ -81,10 +71,6 @@ class Obj(Entity):
                 self.position += self.mome * time.dt
         finally:
             pass
-        print(f'y is {self.position[1]}')
-
->>>>>>> Stashed changes
-
 
     def update(self):
         global score
@@ -162,8 +148,6 @@ class Obj(Entity):
             self.gemtype = gem
 
         self.position += self.mome * time.dt
-        print(f'pos {self.position}')
-        print(f'momentum {self.mome}')
 
 
 
@@ -174,7 +158,6 @@ class MC(Entity):
         self.model='cube'
         self.texture='white_cube'
         self.position = Vec3(0,0,0)
-<<<<<<< Updated upstream
         self.scale = Vec3(4,1,1)
         self.collider = 'box'
         try:
@@ -205,4 +188,5 @@ block1 = Obj()
 block2 = Obj()
 block3 = Obj()
 char = MC()
+boot = startup()
 app.run()
