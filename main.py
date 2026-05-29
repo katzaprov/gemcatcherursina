@@ -25,6 +25,12 @@ class ui():
         super().__init__()
         scoreboard = Text('Loading',world_scale=2,origin=Vec2(-.5,.5),position=window.top_left)
         healthboard = Text('Loading',world_scale=2,origin=Vec2(-.5,.5),position=scoreboard.bottom_left)
+    def update(self):
+        global scoreboard
+        global healthboard
+        scoreboard.text = f'{"health: " + health + ' ' + '|'*(health/2)}'
+
+
 
 
 class Obj(Entity):
