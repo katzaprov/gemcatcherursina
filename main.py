@@ -175,7 +175,10 @@ class MC(Entity):
                 self.position += Vec3(-speed,0,0)*time.dt
             if held_keys['d'] or held_keys['e']:
                 self.position += Vec3(speed,0,0)*time.dt
-
+        if self.position[0] > 10:
+            self.position = Vec3(-10,0,0)
+        elif self.position[0] < -10:
+            self.position = Vec3(10,0,0)
         
 
         print(self.position[0])
