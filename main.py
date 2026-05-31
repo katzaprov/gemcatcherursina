@@ -10,25 +10,18 @@ score = 0
 health = 40
 Text.default_font = '8514oem.ttf'
 
-class startup():
-    script_dir = os.path.dirname(__file__) 
-    sound_path = '\\'.join([script_dir, 'sounds', 'alterraboot.wav'])
-    print(sound_path)
-    print('hello world')
-    PlaySound(sound_path,SND_FILENAME)
 
 
-class ui():
-    global health
-    global score
-    def __init__(self,):
-        super().__init__()
-        scoreboard = Text('Loading',world_scale=2,origin=Vec2(-.5,.5),position=window.top_left)
-        healthboard = Text('Loading',world_scale=2,origin=Vec2(-.5,.5),position=scoreboard.bottom_left)
-    def update(self):
-        global scoreboard
-        global healthboard
-        scoreboard.text = f'{"health: " + health + ' ' + '|'*(health/2)}'
+
+
+
+scoreboard = Text('Loading',world_scale=20,origin=Vec2(-.5,.5),position=window.top_left,)
+healthboard = Text('Loading',world_scale=20,origin=Vec2(-.5,.5),position=window.top_left-(0,0.04),)
+def update():
+    global scoreboard
+    global healthboard
+    healthboard.text = f'{"health: " + f'{health}' + ' ' + '|'*(health//2)}'
+    scoreboard.text = f'score: {score}'
 
 
 
@@ -98,6 +91,7 @@ class Obj(Entity):
                 health -= 10
             if self.gemtype == 4:
                 score += 30
+                health -=30
 
             gem = randint(1,4)
             if self.gemtype == gem:
@@ -159,34 +153,48 @@ class Obj(Entity):
 
 
 class MC(Entity):
-    def __init__(self, ):
+    def __init__(self, **kwargs):
         super().__init__()
         self.model='cube'
         self.texture='white_cube'
         self.position = Vec3(0,0,0)
         self.scale = Vec3(4,1,1)
         self.collider = 'box'
-        try:
-            self.mome
-        except:
-            self.mome = Vec3(0,0,0)
-    
-    def input(self, key):
-        if held_keys['shift']:
-            if held_keys['a'] or held_keys['q']:
-                self.position += Vec3(-25*time.dt,0,0)
-            if held_keys['d'] or held_keys['e']:
-                self.position += Vec3(25*time.dt,0,0)
-        else:
-            if held_keys['a'] or held_keys['q']:
-                self.position += Vec3(-8*time.dt,0,0)
-            if held_keys['d'] or held_keys['e']:
-                self.position += Vec3(8*time.dt,0,0)
-
+        self.mome = Vec3(0,0,0)
+        Drag = 0
 
     def update(self):
-        self.position += self.mome * time.dt
+        speed = 10
+        if held_keys['shift']:
+            if held_keys['a'] or held_keys['q']:
+                self.position += Vec3(-5*speed,0,0)*time.dt
+            if held_keys['d'] or held_keys['e']:
+                self.position += Vec3(5*speed,0,0)*time.dt
+        else:
+            if held_keys['a'] or held_keys['q']:
+                self.position += Vec3(-speed,0,0)*time.dt
+            if held_keys['d'] or held_keys['e']:
+                self.position += Vec3(speed,0,0)*time.dt
 
+        
+
+        print(self.position[0])
+
+
+        global health
+        if health <= 0:
+            global score
+            print('Game Over\n')
+            print(score)
+            raise SystemExit()
+
+
+
+script_dir = os.path.dirname(__file__) 
+sound_path = '\\'.join([script_dir, 'assets', 'sounds', 'alterraboot.wav'])
+print(sound_path)
+print('hello world')
+PlaySound(sound_path,SND_FILENAME)
 
 EditorCamera()
 
@@ -194,5 +202,4 @@ block1 = Obj()
 block2 = Obj()
 block3 = Obj()
 char = MC()
-boot = startup()
 app.run()
